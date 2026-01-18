@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neural Master Lab | Class 12 AI</title>
+    <style>
+        :root {
+            --pink: #FE90E8;
+            --blue: #C0F7FE;
+            --green: #99E885;
+            --yellow: #F7CB46;
+            --cream: #FFDC8B;
+            --black: #000000;
+            --white: #FFFFFF;
+            --border: 4px solid #000;
+            --shadow: 8px 8px 0px #000;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Public Sans', -apple-system, sans-serif;
+        }
+
+        body {
+            background: var(--cream);
+            margin: 0;
+            padding: 20px;
+            color: var(--black);
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            border: var(--border);
+            background: var(--white);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        header {
+            background: var(--pink);
+            border-bottom: var(--border);
+            padding: 2rem;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: -2px;
+            font-weight: 900;
+        }
+
+        /* Tab Navigation */
+        nav {
+            display: flex;
+            background: var(--black);
+            border-bottom: var(--border);
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            background: var(--white);
+            font-size: 1rem;
+            font-weight: 900;
+            cursor: pointer;
+            text-transform: uppercase;
+            border-right: var(--border);
+            transition: 0.1s;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover { background: var(--yellow); }
+        .tab-btn.active { background: var(--green); }
+        .tab-btn:last-child { border-right: none; }
+
+        .content {
+            padding: 20px;
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .content.active { display: block; }
+
+        .canvas-container {
+            background: #fff;
+            border: var(--border);
+            box-shadow: 4px 4px 0px #000;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+            background-color: #fff;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            padding: 15px;
+            background: var(--blue);
+            border: var(--border);
+        }
+
+        .btn {
+            background: var(--white);
+            border: var(--border);
+            padding: 10px 20px;
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: 4px 4px 0px #000;
+            text-transform: uppercase;
+            transition: 0.1s;
+        }
+
+        .btn:hover { background: var(--yellow); }
+        .btn:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0px #000; }
+
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            font-weight: bold;
+        }
+
+        .info-card {
+            background: var(--yellow);
+            border: var(--border);
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 4px 4px 0px #000;
+        }
+
+        .formula {
+            display: inline-block;
+            background: var(--black);
+            color: var(--white);
+            padding: 5px 15px;
+            font-family: monospace;
+            font-size: 1.2rem;
+            margin: 10px 0;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        code { background: rgba(0,0,0,0.05); padding: 2px 4px; border-radius: 4px; }
+
+        @media (max-width: 600px) { h1 { font-size: 2rem; } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Neural Master Lab</h1>
+        <p>A Professional Deep Learning Sandbox for Class 12 AI Students</p>
+    </header>
+
+    <nav id="main-nav">
+        <button class="tab-btn active" data-tab="forward">Forward Prop</button>
+        <button class="tab-btn" data-tab="activation">Activations</button>
+        <button class="tab-btn" data-tab="gradient">Gradient Descent</button>
+        <button class="tab-btn" data-tab="training">Linear Classify</button>
+    </nav>
+
+    <!-- TAB 1: Forward Propagation -->
+    <div id="forward" class="content active">
+        <div class="grid-2">
+            <div>
+                <h2>1. The Forward Pass</h2>
+                <p>Calculates the output using the formula: <span class="formula">z = &sum;(w<sub>i</sub>x<sub>i</sub>) + b</span> followed by an activation function.</p>
+            </div>
+            <div class="info-card">
+                <h3>Visual Guide:</h3>
+                <ul>
+                    <li><b>Green Lines:</b> Positive Weights | <b>Pink Lines:</b> Negative</li>
+                    <li><b>Line Thickness:</b> Magnitude | <b>Neuron Color:</b> Activation Value</li>
+                </ul>
+            </div>
+        </div>
+        <div class="canvas-container">
+            <canvas id="canvasForward" width="800" height="400"></canvas>
+        </div>
+        <div class="controls">
+            <div class="slider-group">
+                <label>Weight (w1): <span id="w1-val">0.8</span></label>
+                <input type="range" id="w1-slider" min="-3" max="3" step="0.1" value="0.8">
+            </div>
+            <div class="slider-group">
+                <label>Weight (w2): <span id="w2-val">-1.2</span></label>
+                <input type="range" id="w2-slider" min="-3" max="3" step="0.1" value="-1.2">
+            </div>
+            <div class="slider-group">
+                <label>Bias (b): <span id="b-val">0.0</span></label>
+                <input type="range" id="b-slider" min="-5" max="5" step="0.1" value="0">
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 2: Activation Functions -->
+    <div id="activation" class="content">
+        <h2>2. Activation Plotter</h2>
+        <div class="canvas-container">
+            <canvas id="canvasActive" width="800" height="400"></canvas>
+        </div>
+        <div class="controls">
+            <button class="btn" onclick="setActiveFunc('sigmoid')">Sigmoid</button>
+            <button class="btn" onclick="setActiveFunc('relu')">ReLU</button>
+            <button class="btn" onclick="setActiveFunc('tanh')">Tanh</button>
+            <button class="btn" onclick="setActiveFunc('step')">Binary Step</button>
+        </div>
+        <div class="info-card">
+            <p id="func-desc"><b>Sigmoid:</b> Squashes input into a range between 0 and 1.</p>
+        </div>
+    </div>
+
+    <!-- TAB 3: Gradient Descent -->
+    <div id="gradient" class="content">
+        <h2>3. Visualizing Backpropagation</h2>
+        <p>Backpropagation uses the <b>Derivative</b> (slope) to decide how much to change the weights.
+           Click the graph to "Drop" a weight, then watch it learn!</p>
+        
+        <div class="canvas-container">
+            <canvas id="canvasGrad" width="800" height="450" style="cursor: crosshair;"></canvas>
+        </div>
+
+        <div class="controls">
+            <button class="btn" id="grad-auto-btn" onclick="toggleAutoGrad()">Auto-Optimize</button>
+            <button class="btn" onclick="stepGrad()" style="background:var(--green)">Take 1 Step</button>
+            <button class="btn" onclick="resetGrad()" style="background:var(--pink)">Reset Path</button>
+            <div class="slider-group">
+                <label>Learning Rate ($\eta$): <span id="lr-val">0.10</span></label>
+                <input type="range" id="lr-slider" min="0.01" max="1.5" step="0.01" value="0.10">
+            </div>
+        </div>
+
+        <div class="info-card">
+            <h3>Understanding the Visuals:</h3>
+            <ul>
+                <li><b>Tangent Line (Black):</b> This is the gradient. It shows the slope at your current weight.</li>
+                <li><b>Path (Pink/Blue):</b> The colorful trail shows exactly how your weight "jumped" during optimization.</li>
+                <li><b>High Learning Rate:</b> If $\eta$ is too high, the ball will bounce over the minimum (Overshooting)!</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- TAB 4: Linear Classification -->
+    <div id="training" class="content">
+        <h2>4. Live Classification</h2>
+        <div class="canvas-container">
+            <canvas id="canvasTrain" width="800" height="500"></canvas>
+        </div>
+        <div class="controls">
+            <button class="btn" id="train-toggle" onclick="toggleTraining()">Start Training</button>
+            <button class="btn" onclick="resetPoints()" style="background:var(--yellow)">New Data</button>
+            <p>Epochs: <span id="epoch-count" class="formula">0</span></p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- UTILS ---
+    function sigmoid(x) { return 1 / (1 + Math.exp(-x)); }
+    function relu(x) { return Math.max(0, x); }
+    function tanh(x) { return Math.tanh(x); }
+
+    const tabs = document.querySelectorAll('.tab-btn');
+    const contents = document.querySelectorAll('.content');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            contents.forEach(c => c.classList.remove('active'));
+            tab.classList.add('active');
+            document.getElementById(tab.dataset.tab).classList.add('active');
+            window.dispatchEvent(new Event('resize'));
+        });
+    });
+
+    // --- TAB 1: FORWARD PROP ---
+    const cvsF = document.getElementById('canvasForward');
+    const ctxF = cvsF.getContext('2d');
+    function drawForward() {
+        if(!document.getElementById('forward').classList.contains('active')) return requestAnimationFrame(drawForward);
+        const w1 = parseFloat(document.getElementById('w1-slider').value);
+        const w2 = parseFloat(document.getElementById('w2-slider').value);
+        const b = parseFloat(document.getElementById('b-slider').value);
+        document.getElementById('w1-val').innerText = w1;
+        document.getElementById('w2-val').innerText = w2;
+        document.getElementById('b-val').innerText = b;
+
+        const input1 = 1.0; const input2 = 0.5;
+        const z = (input1 * w1) + (input2 * w2) + b;
+        const act = sigmoid(z);
+
+        ctxF.clearRect(0, 0, 800, 400);
+        drawConnection(ctxF, 150, 100, 400, 200, w1);
+        drawConnection(ctxF, 150, 300, 400, 200, w2);
+        drawConnection(ctxF, 400, 200, 650, 200, act * 2);
+
+        drawNeuron(ctxF, 150, 100, 40, "var(--blue)", "IN 1");
+        drawNeuron(ctxF, 150, 300, 40, "var(--blue)", "IN 2");
+        drawNeuron(ctxF, 400, 200, 60, "var(--white)", "z");
+        drawNeuron(ctxF, 650, 200, 50, `rgba(153, 232, 133, ${act})`, `ŷ: ${act.toFixed(2)}`);
+        requestAnimationFrame(drawForward);
+    }
+    function drawNeuron(ctx, x, y, r, color, label) {
+        ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.fillStyle = color; ctx.fill();
+        ctx.lineWidth = 4; ctx.strokeStyle = "#000"; ctx.stroke();
+        ctx.fillStyle = "#000"; ctx.textAlign = "center"; ctx.font = "bold 14px sans-serif";
+        ctx.fillText(label, x, y + 5);
+    }
+    function drawConnection(ctx, x1, y1, x2, y2, weight) {
+        ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2);
+        ctx.lineWidth = Math.abs(weight) * 5 + 1;
+        ctx.strokeStyle = weight >= 0 ? "var(--green)" : "var(--pink)"; ctx.stroke();
+    }
+
+    // --- TAB 2: ACTIVATIONS ---
+    const cvsA = document.getElementById('canvasActive');
+    const ctxA = cvsA.getContext('2d');
+    let currentFunc = 'sigmoid';
+    function setActiveFunc(f) {
+        currentFunc = f;
+        const desc = document.getElementById('func-desc');
+        if(f === 'sigmoid') desc.innerHTML = "<b>Sigmoid:</b> Values [0 to 1]. Differentiable everywhere.";
+        if(f === 'relu') desc.innerHTML = "<b>ReLU:</b> f(x)=max(0,x). Zero for negatives.";
+        if(f === 'tanh') desc.innerHTML = "<b>Tanh:</b> Values [-1 to 1]. Centered at zero.";
+        if(f === 'step') desc.innerHTML = "<b>Binary Step:</b> 0 or 1 only. Gradient is zero.";
+        drawActive();
+    }
+    function drawActive() {
+        ctxA.clearRect(0, 0, 800, 400);
+        const midX = 400; const midY = 250;
+        ctxA.strokeStyle = "#ddd"; ctxA.beginPath();
+        for(let i=0; i<800; i+=50) { ctxA.moveTo(i, 0); ctxA.lineTo(i, 400); }
+        for(let i=0; i<400; i+=50) { ctxA.moveTo(0, i); ctxA.lineTo(800, i); }
+        ctxA.stroke();
+        ctxA.strokeStyle = "#000"; ctxA.lineWidth = 2;
+        ctxA.beginPath(); ctxA.moveTo(midX, 0); ctxA.lineTo(midX, 400); ctxA.stroke();
+        ctxA.beginPath(); ctxA.moveTo(0, midY); ctxA.lineTo(800, midY); ctxA.stroke();
+        ctxA.beginPath(); ctxA.strokeStyle = "var(--pink)"; ctxA.lineWidth = 5;
+        for(let x = -400; x < 400; x++) {
+            let val = x / 50; let y;
+            if(currentFunc === 'sigmoid') y = sigmoid(val);
+            else if(currentFunc === 'relu') y = relu(val);
+            else if(currentFunc === 'tanh') y = tanh(val);
+            else if(currentFunc === 'step') y = val >= 0 ? 1 : 0;
+            ctxA.lineTo(x + midX, midY - (y * 100));
+        }
+        ctxA.stroke();
+    }
+
+    // --- TAB 3: INTUITIVE GRADIENT DESCENT ---
+    const cvsG = document.getElementById('canvasGrad');
+    const ctxG = cvsG.getContext('2d');
+    let currentW = 150; 
+    let path = [];
+    let isAutoGrad = false;
+
+    const getLoss = (w) => 0.002 * Math.pow(w - 400, 2) + 100;
+    const getDerivative = (w) => 0.004 * (w - 400); 
+
+    cvsG.addEventListener('mousedown', (e) => {
+        const rect = cvsG.getBoundingClientRect();
+        const scaleX = cvsG.width / rect.width;
+        currentW = (e.clientX - rect.left) * scaleX;
+        path = [];
+        isAutoGrad = false;
+        document.getElementById('grad-auto-btn').innerText = "Auto-Optimize";
+    });
+
+    function resetGrad() { path = []; isAutoGrad = false; document.getElementById('grad-auto-btn').innerText = "Auto-Optimize"; }
+    function toggleAutoGrad() { 
+        isAutoGrad = !isAutoGrad; 
+        document.getElementById('grad-auto-btn').innerText = isAutoGrad ? "Stop" : "Auto-Optimize";
+    }
+
+    function stepGrad() {
+        const lr = parseFloat(document.getElementById('lr-slider').value);
+        const grad = getDerivative(currentW);
+        path.push({w: currentW, l: getLoss(currentW)});
+        currentW = currentW - (grad * lr * 1000); 
+        if(path.length > 50) path.shift();
+    }
+
+    function drawGrad() {
+        if(!document.getElementById('gradient').classList.contains('active')) return requestAnimationFrame(drawGrad);
+        ctxG.clearRect(0, 0, 800, 450);
+        const lr = parseFloat(document.getElementById('lr-slider').value);
+        document.getElementById('lr-val').innerText = lr.toFixed(2);
+
+        // 1. Draw Curve
+        ctxG.beginPath(); ctxG.lineWidth = 6; ctxG.strokeStyle = "var(--black)";
+        for(let x=50; x<750; x++) {
+            ctxG.lineTo(x, getLoss(x));
+        }
+        ctxG.stroke();
+
+        // 2. Auto Step
+        if(isAutoGrad) stepGrad();
+
+        // 3. Draw Path (History) - Improved Visibility
+        if(path.length > 1) {
+            ctxG.beginPath(); 
+            ctxG.strokeStyle = "var(--pink)"; 
+            ctxG.lineWidth = 4;
+            ctxG.moveTo(path[0].w, path[0].l);
+            path.forEach(p => ctxG.lineTo(p.w, p.l));
+            ctxG.stroke();
+
+            // Dots on path
+            path.forEach(p => {
+                ctxG.beginPath();
+                ctxG.arc(p.w, p.l, 3, 0, Math.PI*2);
+                ctxG.fillStyle = "var(--black)";
+                ctxG.fill();
+            });
+        }
+
+        // 4. Draw Tangent Line (Gradient Visual) - High Contrast Black
+        const loss = getLoss(currentW);
+        const derivative = getDerivative(currentW);
+        const tanLen = 80;
+        ctxG.beginPath(); 
+        ctxG.strokeStyle = "var(--black)"; 
+        ctxG.lineWidth = 3;
+        ctxG.setLineDash([10, 5]); // Dashed for "slope" feel
+        ctxG.moveTo(currentW - tanLen, loss - (derivative * tanLen));
+        ctxG.lineTo(currentW + tanLen, loss + (derivative * tanLen));
+        ctxG.stroke();
+        ctxG.setLineDash([]);
+
+        // 5. Draw Weight Ball
+        drawNeuron(ctxG, currentW, loss, 18, "var(--green)", "");
+        
+        // 6. Text Labels
+        ctxG.fillStyle = "#000"; ctxG.font = "bold 14px Inter";
+        ctxG.fillText(`Weight: ${currentW.toFixed(0)}`, currentW - 40, loss - 50);
+        ctxG.fillText(`Slope: ${derivative.toFixed(3)}`, currentW - 45, loss - 30);
+        ctxG.fillText("GOAL (Loss Minimum)", 335, getLoss(400) + 50);
+        
+        if(Math.abs(derivative) > 0.4 && lr > 0.7) {
+            ctxG.fillStyle = "red";
+            ctxG.font = "900 18px Inter";
+            ctxG.fillText("WARNING: OVERSHOOTING!", 280, 50);
+        }
+
+        requestAnimationFrame(drawGrad);
+    }
+
+    // --- TAB 4: LINEAR CLASSIFICATION ---
+    const cvsT = document.getElementById('canvasTrain');
+    const ctxT = cvsT.getContext('2d');
+    let points = []; let weightsT = [0, 0]; let biasT = 0; let isTraining = false; let epochs = 0;
+    function resetPoints() {
+        points = []; epochs = 0; weightsT = [Math.random()*2-1, Math.random()*2-1]; biasT = Math.random()*2-1;
+        for(let i=0; i<60; i++) {
+            let x = Math.random()*800; let y = Math.random()*500;
+            points.push({x, y, label: (y > 0.6*x + 50) ? 1 : 0});
+        }
+    }
+    function toggleTraining() { isTraining = !isTraining; document.getElementById('train-toggle').innerText = isTraining ? "Stop" : "Start"; }
+    function trainLoop() {
+        if(!document.getElementById('training').classList.contains('active')) return requestAnimationFrame(trainLoop);
+        ctxT.clearRect(0, 0, 800, 500);
+        if(isTraining) {
+            epochs++; document.getElementById('epoch-count').innerText = epochs;
+            points.forEach(p => {
+                let sum = (p.x/800 * weightsT[0]) + (p.y/500 * weightsT[1]) + biasT;
+                let error = p.label - (sum >= 0 ? 1 : 0);
+                weightsT[0] += error * (p.x/800) * 0.02; weightsT[1] += error * (p.y/500) * 0.02; biasT += error * 0.02;
+            });
+        }
+        ctxT.beginPath(); ctxT.strokeStyle = "#000"; ctxT.lineWidth = 4;
+        for(let x=0; x<800; x+=10) {
+            let y = (-weightsT[0]*(x/800) - biasT) / weightsT[1] * 500;
+            if(x===0) ctxT.moveTo(x, y); else ctxT.lineTo(x, y);
+        }
+        ctxT.stroke();
+        points.forEach(p => {
+            ctxT.beginPath(); ctxT.arc(p.x, p.y, 8, 0, Math.PI*2);
+            ctxT.fillStyle = p.label===1 ? "var(--green)" : "var(--pink)"; ctxT.fill();
+            ctxT.strokeStyle="#000"; ctxT.stroke();
+        });
+        requestAnimationFrame(trainLoop);
+    }
+
+    // Init
+    resetPoints(); drawForward(); drawActive(); drawGrad(); trainLoop();
+</script>
+</body>
+</html>
