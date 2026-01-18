@@ -337,7 +337,7 @@
     function drawConnection(ctx, x1, y1, x2, y2, weight) {
         ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2);
         ctx.lineWidth = Math.abs(weight) * 5 + 1;
-        ctx.strokeStyle = weight >= 0 ? "var(--green)" : "var(--pink)"; ctx.stroke();
+        ctx.strokeStyle = weight >= 0 ? "#99E885" : "#FE90E8"; ctx.stroke();
     }
 
     // --- TAB 2: ACTIVATIONS ---
