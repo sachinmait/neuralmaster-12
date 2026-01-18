@@ -321,9 +321,9 @@
         drawConnection(ctxF, 150, 300, 400, 200, w2);
         drawConnection(ctxF, 400, 200, 650, 200, act * 2);
 
-        drawNeuron(ctxF, 150, 100, 40, "var(--blue)", "IN 1");
-        drawNeuron(ctxF, 150, 300, 40, "var(--blue)", "IN 2");
-        drawNeuron(ctxF, 400, 200, 60, "var(--white)", "z");
+        drawNeuron(ctxF, 150, 100, 40, "#C0F7FE", "IN 1");
+        drawNeuron(ctxF, 150, 300, 40, "#C0F7FE", "IN 2");
+        drawNeuron(ctxF, 400, 200, 60, "#FFFFFF", "z");
         drawNeuron(ctxF, 650, 200, 50, `rgba(153, 232, 133, ${act})`, `ŷ: ${act.toFixed(2)}`);
         requestAnimationFrame(drawForward);
     }
@@ -363,7 +363,7 @@
         ctxA.strokeStyle = "#000"; ctxA.lineWidth = 2;
         ctxA.beginPath(); ctxA.moveTo(midX, 0); ctxA.lineTo(midX, 400); ctxA.stroke();
         ctxA.beginPath(); ctxA.moveTo(0, midY); ctxA.lineTo(800, midY); ctxA.stroke();
-        ctxA.beginPath(); ctxA.strokeStyle = "var(--pink)"; ctxA.lineWidth = 5;
+        ctxA.beginPath(); ctxA.strokeStyle = "#FE90E8"; ctxA.lineWidth = 5;
         for(let x = -400; x < 400; x++) {
             let val = x / 50; let y;
             if(currentFunc === 'sigmoid') y = sigmoid(val);
@@ -415,7 +415,7 @@
         document.getElementById('lr-val').innerText = lr.toFixed(2);
 
         // 1. Draw Curve
-        ctxG.beginPath(); ctxG.lineWidth = 6; ctxG.strokeStyle = "var(--black)";
+        ctxG.beginPath(); ctxG.lineWidth = 6; ctxG.strokeStyle = "#000000";
         for(let x=50; x<750; x++) {
             ctxG.lineTo(x, getLoss(x));
         }
@@ -427,7 +427,7 @@
         // 3. Draw Path (History) - Improved Visibility
         if(path.length > 1) {
             ctxG.beginPath(); 
-            ctxG.strokeStyle = "var(--pink)"; 
+            ctxG.strokeStyle = "#FE90E8"; 
             ctxG.lineWidth = 4;
             ctxG.moveTo(path[0].w, path[0].l);
             path.forEach(p => ctxG.lineTo(p.w, p.l));
@@ -437,7 +437,7 @@
             path.forEach(p => {
                 ctxG.beginPath();
                 ctxG.arc(p.w, p.l, 3, 0, Math.PI*2);
-                ctxG.fillStyle = "var(--black)";
+                ctxG.fillStyle = "#000000";
                 ctxG.fill();
             });
         }
@@ -447,7 +447,7 @@
         const derivative = getDerivative(currentW);
         const tanLen = 80;
         ctxG.beginPath(); 
-        ctxG.strokeStyle = "var(--black)"; 
+        ctxG.strokeStyle = "#000000"; 
         ctxG.lineWidth = 3;
         ctxG.setLineDash([10, 5]); // Dashed for "slope" feel
         ctxG.moveTo(currentW - tanLen, loss - (derivative * tanLen));
@@ -456,7 +456,7 @@
         ctxG.setLineDash([]);
 
         // 5. Draw Weight Ball
-        drawNeuron(ctxG, currentW, loss, 18, "var(--green)", "");
+        drawNeuron(ctxG, currentW, loss, 18, "#99E885", "");
         
         // 6. Text Labels
         ctxG.fillStyle = "#000"; ctxG.font = "bold 14px Inter";
@@ -504,7 +504,7 @@
         ctxT.stroke();
         points.forEach(p => {
             ctxT.beginPath(); ctxT.arc(p.x, p.y, 8, 0, Math.PI*2);
-            ctxT.fillStyle = p.label===1 ? "var(--green)" : "var(--pink)"; ctxT.fill();
+            ctxT.fillStyle = p.label===1 ? "#99E885" : "#FE90E8"; ctxT.fill();
             ctxT.strokeStyle="#000"; ctxT.stroke();
         });
         requestAnimationFrame(trainLoop);
